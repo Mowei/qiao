@@ -2,6 +2,21 @@ local moduleName = ...
 local M = {}
 _G[moduleName] = M
 
+
+M.OnlineVersion = ""
+
+local function wait_upgrade()
+  if config.UpgradeStatus == "YES" then
+    tmr.stop(1)
+    app =nil
+    package.loaded['app'] = nil
+    -- dosomething
+    setup = require("setup")
+    app = require("myMqtt")
+    app.start()
+  end
+end
+
 function M.save_setting(name, value)
   file.open(name, 'w') 
   file.writeline(value)
@@ -19,43 +34,55 @@ function M.read_setting(name)
 end
 
 function M.Upgrade()
+    print("Download Upgrade... " .. config.ScriptUrl .. "Upgrade.lua")
 	http.get(config.ScriptUrl .. "Upgrade.lua", nil, function(code, data)
     if (code < 0) then
+        print("Upgrade.lua Download fail")
     else
         file.open("Upgrade.lua", 'w')
         file.writeline(data)
         file.close()
-		dofile("Upgrade.lua")
-		M.save_setting("Version", value)
+        upg = require("Upgrade")
+		upg.install(M.OnlineVersion)
+        upg =nil
+        package.loaded ['upg'] = nil
     end
   end)
 end
 
 function M.CheckVersion()
 http.get(config.ScriptUrl .. "Version", nil, function(code, data)
-    if (code < 0 or 404) then
+    if (code < 0 ) then
 	return false;
     else
-        print(data)
 		--get online Version
-		for k,v in sjson.decode(data) do
+		for k,v in pairs(sjson.decode(data)) do
 			if( k== "Version") then Version = v end
 		end
+        M.OnlineVersion = Version
+        print("online Version : "..Version)
 		--read nodemcu Version
 		fileExists,nowVersion=M.read_setting("Version")
+      
 		if(fileExists) then
+            print("New Version : "..nowVersion)
 			if(nowVersion ~= Version) then
 				M.Upgrade()
+             else
+                config.UpgradeStatus = "YES"
 			end
 		else
+            print("not install")
 			M.Upgrade()
 		end
-
     end
+    tmr.alarm(1, 2500, 1, wait_upgrade)
   end)
 end
 
-function M.start()  
+function M.start()
+    setup =nil
+    package.loaded['setup'] = nil
     M.CheckVersion()
 end
 

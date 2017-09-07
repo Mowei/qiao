@@ -46,10 +46,10 @@ local function wifi_start(list_aps)
     end
 end
 
-function M.start()  
-  print("Configuring Wifi ...")
-  wifi.setmode(wifi.STATION);
-  wifi.sta.getap(wifi_start)
+function M.start()
+    print("Configuring Wifi ...")
+    wifi.setmode(wifi.STATION);
+    wifi.sta.getap(wifi_start)
 end
 
 return M 
