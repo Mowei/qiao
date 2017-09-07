@@ -33,9 +33,10 @@ end
 
 function M.CheckVersion()
 http.get(config.ScriptUrl .. "Version", nil, function(code, data)
-    if (code < 0) then
+    if (code < 0 or 404) then
 	return false;
     else
+        print(data)
 		--get online Version
 		for k,v in sjson.decode(data) do
 			if( k== "Version") then Version = v end
