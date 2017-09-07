@@ -4,7 +4,7 @@ _G[moduleName] = M
 
 
 M.OnlineVersion = ""
-
+local tmrTime = 0
 local function wait_upgrade()
   if config.UpgradeStatus == "YES" then
     tmr.stop(1)
@@ -14,6 +14,14 @@ local function wait_upgrade()
     setup = require("setup")
     app = require("myMqtt")
     app.start()
+    else
+    print("upgrade waiting ...")
+    tmrTime = tmrTime + 1
+    if tmrTime>=10 then
+        tmr.stop(1)
+        tmrTime = 0
+        node.restart()
+    end
   end
 end
 
