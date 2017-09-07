@@ -41,7 +41,7 @@ function M.mqtt_start()
                 if(k=="Data") then datas.Data = v end
             end
             if(tostring(datas.ID) == tostring(config.ID)) then
-                if (string.upper(datas.CMD) == "TELNET") then
+                if ( datas.CMD ~= nil and string.upper(datas.CMD) == "TELNET") then
                 dofile("telnet.lua") 
                 datas.msg = 'TELNET ON ' .. wifi.sta.getip()
                 end
