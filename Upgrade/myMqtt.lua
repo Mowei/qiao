@@ -27,7 +27,7 @@ function M.mqtt_start()
 		end,
 		function(client, reason)
 			print("failed reason: " .. reason)
-			--setup.start() 
+			setup.start() 
 		end
 	)
 	-- on publish message receive event
@@ -55,7 +55,7 @@ function M.mqtt_start()
 	-- This is part when wifi disconnects and I tested it for 5 minutes connecting wifi back and this works
 	m:on("offline", function(client) 
 		print ("Offline " .. config.ID) 
-		--setup.start()
+		setup.start()
 	end)
     
 	print("Connecting to broker...")
